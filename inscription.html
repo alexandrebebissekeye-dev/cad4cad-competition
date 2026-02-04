@@ -8,7 +8,7 @@
 
 <link rel="stylesheet" href="style.css">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 </head>
 
@@ -46,44 +46,66 @@
 
 
 <script>
+  // 1. Vérification que Supabase est bien chargé
+  if (typeof supabase === 'undefined') {
+      console.error("La librairie Supabase ne s'est pas chargée !");
+      alert("Erreur technique : Impossible de charger le système d'inscription.");
+  } else {
+      console.log("Supabase chargé avec succès.");
+  }
 
-// SUPABASE CONFIG
-const supabase = window.supabase.createClient(
-    "https://opnfzyevppoacawbnnco.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wbmZ6eWV2cHBvYWNhd2JubmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTc0NDcsImV4cCI6MjA4NTczMzQ0N30.NIKt_io-bRgGyYI_zDaQn5P1pDGFxheuVzIHcn7lMaE"
-);
+  // 2. Configuration
+  const supabaseUrl = "https://opnfzyevppoacawbnnco.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wbmZ6eWV2cHBvYWNhd2JubmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTc0NDcsImV4cCI6MjA4NTczMzQ0N30.NIKt_io-bRgGyYI_zDaQn5P1pDGFxheuVzIHcn7lMaE";
+  
+  // Utilisation directe de 'supabase' (la variable globale créée par le script CDN)
+  const client = supabase.createClient(supabaseUrl, supabaseKey);
 
+  // 3. Soumission du formulaire
+  const form = document.getElementById("inscriptionForm");
+  
+  form.addEventListener("submit", async (e) => {
+      e.preventDefault(); // Empêche le rechargement de la page
+      console.log("Bouton cliqué, début de l'envoi...");
 
-// FORM SUBMIT
-document.getElementById("inscriptionForm").addEventListener("submit", async (e) => {
+      const btn = document.querySelector(".btn-register");
+      btn.textContent = "Envoi en cours...";
+      btn.disabled = true;
 
-    e.preventDefault();
+      // Récupération des données
+      const data = {
+          nom_complet: document.getElementById("nom").value,
+          niveau: document.getElementById("niveau").value,
+          formation: document.getElementById("formation").value,
+          filiere: document.getElementById("filiere").value,
+          telephone: document.getElementById("telephone").value,
+          logiciel: document.getElementById("logiciel").value,
+          ecole: document.getElementById("ecole").value,
+          email: document.getElementById("email").value
+      };
 
-    const data = {
-        nom_complet: document.getElementById("nom").value,
-        niveau: document.getElementById("niveau").value,
-        formation: document.getElementById("formation").value,
-        filiere: document.getElementById("filiere").value,
-        telephone: document.getElementById("telephone").value,
-        logiciel: document.getElementById("logiciel").value,
-        ecole: document.getElementById("ecole").value,
-        email: document.getElementById("email").value
-    };
+      try {
+          // Insertion dans Supabase
+          const { error } = await client
+              .from("inscriptions")
+              .insert([data]);
 
-    const { error } = await supabase
-        .from("inscriptions")
-        .insert([data]);
-
-    if(error){
-        alert("Erreur : " + error.message);
-    }
-    else{
-        // REDIRECTION VERS PAGE EPREUVES
-        window.location.href = "exam.html";
-    }
-
-});
-
+          if (error) {
+              console.error("Erreur Supabase:", error);
+              alert("Erreur lors de l'enregistrement : " + error.message);
+              // Réactiver le bouton en cas d'erreur
+              btn.textContent = "Terminer inscription";
+              btn.disabled = false;
+          } else {
+              console.log("Succès !");
+              alert("Inscription réussie ! Redirection...");
+              window.location.href = "exam.html";
+          }
+      } catch (err) {
+          console.error("Erreur inattendue:", err);
+          alert("Une erreur inattendue s'est produite.");
+      }
+  });
 </script>
 
 </body>
