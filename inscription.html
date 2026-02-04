@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Inscription CAD4CAD</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <img src="image/emia.jpg">
+        <h1>Inscription CAD4CAD</h1>
+    </div>
+</header>
+
+
+<section class="register">
+
+<h2>Formulaire d'inscription</h2>
+
+<form id="inscriptionForm" class="formulaire">
+
+<input type="text" id="nom" placeholder="Nom complet" required>
+<input type="text" id="niveau" placeholder="Niveau (N1, N2, N3)" required>
+<input type="text" id="formation" placeholder="Formation (FI / FA)" required>
+<input type="text" id="filiere" placeholder="Filière" required>
+<input type="tel" id="telephone" placeholder="Numéro WhatsApp" required>
+<input type="text" id="logiciel" placeholder="Logiciel CAO utilisé" required>
+<input type="text" id="ecole" placeholder="École" required>
+<input type="email" id="email" placeholder="Adresse Email" required>
+
+<button type="submit" class="btn-register">Terminer inscription</button>
+
+</form>
+
+</section>
+
+
+
+<script>
+
+// SUPABASE CONFIG
+const supabase = window.supabase.createClient(
+    "https://opnfzyevppoacawbnnco.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wbmZ6eWV2cHBvYWNhd2JubmNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTc0NDcsImV4cCI6MjA4NTczMzQ0N30.NIKt_io-bRgGyYI_zDaQn5P1pDGFxheuVzIHcn7lMaE"
+);
+
+
+// FORM SUBMIT
+document.getElementById("inscriptionForm").addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const data = {
+        nom_complet: document.getElementById("nom").value,
+        niveau: document.getElementById("niveau").value,
+        formation: document.getElementById("formation").value,
+        filiere: document.getElementById("filiere").value,
+        telephone: document.getElementById("telephone").value,
+        logiciel: document.getElementById("logiciel").value,
+        ecole: document.getElementById("ecole").value,
+        email: document.getElementById("email").value
+    };
+
+    const { error } = await supabase
+        .from("inscriptions")
+        .insert([data]);
+
+    if(error){
+        alert("Erreur : " + error.message);
+    }
+    else{
+        // REDIRECTION VERS PAGE EPREUVES
+        window.location.href = "exam.html";
+    }
+
+});
+
+</script>
+
+</body>
+</html>
